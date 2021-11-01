@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<head>
+  <!-- Map assets -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <script src="http://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+    crossorigin=""></script>
+
+  <style>
+    .map-frame {
+      display: block;
+      border-style: none;
+      width: 500px;
+      height: 500px;
+    }
+  </style>
+
+  <script>
+    $(document).ready(function() {
+      map = L.map("map-a", {
+        doubleClickZoom: true,
+        scrollWheelZoom: true,
+        touchZoom: true,
+        zoomControl: true,
+        zoomSnap: 0.1
+      });
+
+      const tilelayer = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+        subdomains: 'abcd',
+        maxZoom: 19
+      }).addTo(map);
+
+      //map.setView([40.4430, -79.9530], 13.8);
+      map.setView([40.43789031344326, -79.95796381555677], 17.3);
+
+      const style = {
+        coordsToLatLng: (coords) => new L.LatLng(coords[1], coords[0]),
+      };
+
+      $.getJSON('15213boundaries.json', (parcels) => {
+        parcels.forEach((p) => {
+          let color = '#FFFFFF';
+
+          // 22 A properties
+          if ([
+            "0028F00321000000",
+            "0028F00314000000",
+            "0028F00310000000",
+            "0028F00308000000",
+            "0028F00306000000",
+            "0028F00304000000",
+            "0028F00302000000",
+            "0028K00003000000",
+            "0028L00088000000",
+            "0028L00090000000",
+            "0028L00092000000",
+            "0028L00094000000",
+            "0028L00096000000",
+            "0028L00098000000",
+            "0028L00101000000",
+            "0028L00103000000",
+            "0028L00105000000",
+            "0028L00107000000",
+            "0028L00107002600",
+            "0028L00112000000",
+            "0028L00113000000",
+            "0028L00114000000"
+          ].includes(p.properties.name)) {
+            color = '#FF0000';
+          }
+
+          L.geoJSON(p, { ...style, fillColor: color }).addTo(map)
+        });
+      });
+
+      mapB = L.map("map-b", {
+        doubleClickZoom: true,
+        scrollWheelZoom: true,
+        touchZoom: true,
+        zoomControl: true,
+        zoomSnap: 0.1
+      });
+
+      const tilelayerB = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+        subdomains: 'abcd',
+        maxZoom: 19
+      }).addTo(mapB);
+
+      //map.setView([40.4430, -79.9530], 13.8);
+      mapB.setView([40.43775364328044, -79.96009649076532], 18.3);
+
+      $.getJSON('15213boundaries.json', (parcels) => {
+        parcels.forEach((p) => {
+          let color = '#FFFFFF';
+
+          // 12 B properties
+          if ([
+            "0028F00249000000", // 217
+            "0028K00081000000", // 219
+            "0028K00083000000", // 221
+            "0028K00086000000", // 223
+            "0028K00088000000", // 225
+            "0028K00090000000", // 227
+            "0028K00092000000", // 229
+            "0028K00094000000", // 231
+            "0028K00096000000", // 233
+            "0028K00098000000", // 235
+            "0028K00100000000", // 237
+            "0028K00102000000", // 239
+          ].includes(p.properties.name)) {
+            color = '#00FFFF';
+          }
+
+          L.geoJSON(p, { ...style, fillColor: color }).addTo(mapB)
+        });
+      });
+    });
+  </script>
+</head>
+
+<body>
+  <div class="map-frame" id="map-a" style="margin-bottom: 10%"></div>
+  <div class="map-frame" id="map-b" style="margin-bottom: 10%"></div>
+  <div class="map-frame" id="map-c"></div>
+</body>
+
